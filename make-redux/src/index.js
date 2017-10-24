@@ -12,13 +12,24 @@ let appState = {
   }
 }
 
-function dispatch(action) {
+function createStore(state, stateChanger) {
+  const listeners = []
+  const subscribe = (listener) => listeners.push(listener)
+  const getState = () => state
+  const dispatch = (action) => {
+    stateChanger(state, action)
+    listeners.forEach((listener) => listener())
+  }
+  return { getState, dispatch, subscribe}
+}
+
+function stateChanger(state, action) {
   switch(action.type) {
     case 'UPDATE_TITLE_TEXT':
-      appState.title.text = action.text
+      state.title.text = action.text
       break
     case 'UPDATE_TITLE_COLOR':
-      appState.title.color = action.color
+      state.title.color = action.color
       break
     default:
       break
@@ -42,11 +53,9 @@ function renderContent(content) {
   contentDOM.style.color = content.color
 }
 
+const store = createStore(appState, stateChanger)
+store.subscribe(() => renderApp(store.getState()))
 
-renderApp(appState)
-
-setTimeout(function(){
-  dispatch({type: 'UPDATE_TITLE_TEXT',text:'《React.js 小书》'})
-  dispatch({type: 'UPDATE_TITLE_COLOR',color:'blue'})
-  renderApp(appState)
-},1000)
+renderApp(store.getState())
+store.dispatch({type:'UPDATE_TITLE_TEXT',text:'《React.js 小书》'})
+store.dispatch({type:'UPDATE_TITLE_COLOR',color:'blue'})
