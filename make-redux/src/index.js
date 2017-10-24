@@ -1,30 +1,32 @@
 import './index.css'
 
 let log = console.log.bind(console)
-
-let appState = {
-  title: {
-    text: 'React.js 小书',
-    color: 'red',
-  },
-  content: {
-    text: 'React.js 小书内容',
-    color: 'blue',
-  }
-}
-
-function createStore(state, stateChanger) {
+function createStore(reducer) {
+  let state = null
   const listeners = []
   const subscribe = (listener) => listeners.push(listener)
   const getState = () => state
   const dispatch = (action) => {
-    state = stateChanger(state, action)
+    state = reducer(state, action)
     listeners.forEach((listener) => listener())
   }
+  dispatch({})
   return { getState, dispatch, subscribe}
 }
 
-function stateChanger(state, action) {
+function reducer(state, action) {
+  if(!state) {
+    return {
+      title: {
+        text: 'React.js 小书',
+        color: 'red',
+      },
+      content: {
+        text: 'React.js 小书内容',
+        color: 'blue',
+      }
+    }
+  }
   switch(action.type) {
     case 'UPDATE_TITLE_TEXT':
       return {
@@ -70,7 +72,7 @@ function renderContent(newContent, oldContent = {}) {
   contentDOM.style.color = newContent.color
 }
 
-const store = createStore(appState, stateChanger)
+const store = createStore(reducer)
 let oldState = store.getState()
 store.subscribe(() => {
   const newState = store.getState()
