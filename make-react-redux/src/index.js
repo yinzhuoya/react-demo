@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import Header from './Header'
 import Content from './Content'
-import {Provider} from './react-redux'
+import {Provider} from 'react-redux'
 import './index.css'
 
 function createStore (reducer) {
