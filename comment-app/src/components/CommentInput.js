@@ -1,16 +1,21 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-class CommentInput extends Component {
+export default class CommentInput extends Component {
   static propTypes = {
-    onSubmit: PropTypes.func
+    username: PropTypes.any,
+    onSubmit: PropTypes.func,
+    onUserNameInputBlur: PropTypes.any,
   }
 
+  static defaultProps = {
+    username:''
+  }
 
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = {
-      username: '',
+      username: props.username,
       content: ''
     }
   }
@@ -19,46 +24,33 @@ class CommentInput extends Component {
     this.textarea.focus()
   }
 
-  componentWillMount () {
-    this._loadUsername()
-  }
-
-  _loadUsername () {
-    const username = localStorage.getItem('username')
-    if (username) {
-      this.setState({username})
+  handleUsernameBlur(event) {
+    if(this.props.onUserNameInputBlur) {
+      this.props.onUserNameInputBlur(event.target.value)
     }
   }
 
-  _saveUsername (username) {
-    localStorage.setItem('username', username)
-  }
-
-  handleUsernameBlur (event) {
-    this._saveUsername(event.target.value)
-  }
-
-  handleUsernameChange (event) {
+  handleUsernameChange(event) {
     this.setState({
       username: event.target.value
     })
   }
 
-  handleContentChange (event) {
+  handleContentChange(event) {
     this.setState({
       content: event.target.value
     })
   }
 
-  handleSubmit () {
-    if (this.props.onSubmit) {
+  handleSubmit() {
+    if(this.props.onSubmit) {
       this.props.onSubmit({
         username: this.state.username,
         content: this.state.content,
-        createdTime: +new Date()
+        createdTime: +new Date(),
       })
     }
-    this.setState({ content: ''})
+    this.setState({content: ''})
   }
 
   render() {
@@ -93,5 +85,3 @@ class CommentInput extends Component {
     )
   }
 }
-
-export default CommentInput
